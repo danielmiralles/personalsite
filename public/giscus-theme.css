@@ -1,0 +1,162 @@
+/*!
+ * Giscus theme — Warm Terminal
+ * Custom palette aligned with daniel.sinapsys.work (warm-black + amber).
+ * Loaded by the Giscus iframe via data-theme attribute. The site nginx
+ * config serves this file with Access-Control-Allow-Origin so the
+ * cross-origin fetch from giscus.app succeeds.
+ */
+
+main {
+  /* ─── Site palette mirrored from src/styles/global.css ─────────── */
+  --warm-bg-base: #0c0b0a;
+  --warm-bg-elevated: #16140f;
+  --warm-bg-elevated-strong: #1f1c15;
+  --warm-border: #26221b;
+  --warm-border-strong: #3a342a;
+  --warm-fg-primary: #ece8e1;
+  --warm-fg-muted: #8a847a;
+  --warm-fg-dim: #5a544a;
+  --warm-accent: #f5a524;
+  --warm-accent-hover: #ffbb47;
+  --warm-accent-soft: rgba(245, 165, 36, 0.18);
+  --warm-accent-faint: rgba(245, 165, 36, 0.08);
+
+  color-scheme: dark;
+
+  /* ─── Surfaces ──────────────────────────────────────────────────── */
+  --color-canvas-default: var(--warm-bg-base);
+  --color-canvas-overlay: var(--warm-bg-elevated);
+  --color-canvas-inset: var(--warm-bg-base);
+  --color-canvas-subtle: var(--warm-bg-elevated);
+
+  /* ─── Borders ───────────────────────────────────────────────────── */
+  --color-border-default: var(--warm-border);
+  --color-border-muted: var(--warm-border);
+
+  /* ─── Foreground text ──────────────────────────────────────────── */
+  --color-fg-default: var(--warm-fg-primary);
+  --color-fg-muted: var(--warm-fg-muted);
+  --color-fg-subtle: var(--warm-fg-dim);
+  --color-fg-on-emphasis: var(--warm-bg-base);
+
+  /* ─── Accent (links, focus rings, secondary highlights) ──────── */
+  --color-accent-fg: var(--warm-accent);
+  --color-accent-emphasis: var(--warm-accent);
+  --color-accent-muted: var(--warm-accent-soft);
+  --color-accent-subtle: var(--warm-accent-faint);
+
+  /* ─── Neutral (subtle backgrounds, dividers) ──────────────────── */
+  --color-neutral-muted: var(--warm-bg-elevated-strong);
+  --color-neutral-emphasis: var(--warm-fg-muted);
+  --color-neutral-emphasis-plus: var(--warm-fg-primary);
+  --color-neutral-subtle: var(--warm-accent-faint);
+
+  /* ─── Primary button (Comment, Sign in with GitHub) ────────────── */
+  --color-btn-primary-bg: var(--warm-accent);
+  --color-btn-primary-hover-bg: var(--warm-accent-hover);
+  --color-btn-primary-selected-bg: var(--warm-accent-hover);
+  --color-btn-primary-disabled-bg: var(--warm-accent-soft);
+  --color-btn-primary-text: var(--warm-bg-base);
+  --color-btn-primary-disabled-text: var(--warm-fg-muted);
+  --color-btn-primary-icon: var(--warm-bg-base);
+  --color-btn-primary-counter-bg: rgba(0, 0, 0, 0.2);
+  --color-btn-primary-shadow: 0 0 transparent;
+  --color-btn-primary-inset-shadow: 0 0 transparent;
+  --color-btn-primary-selected-shadow: 0 0 transparent;
+
+  /* ─── Default button (Reply, Cancel, dropdown) ─────────────────── */
+  --color-btn-bg: var(--warm-bg-elevated);
+  --color-btn-hover-bg: var(--warm-bg-elevated-strong);
+  --color-btn-active-bg: var(--warm-bg-base);
+  --color-btn-selected-bg: var(--warm-bg-base);
+  --color-btn-text: var(--warm-fg-primary);
+  --color-btn-border: var(--warm-border);
+  --color-btn-hover-border: var(--warm-border-strong);
+  --color-btn-active-border: var(--warm-accent);
+  --color-btn-counter-bg: var(--warm-bg-base);
+  --color-btn-shadow: 0 0 transparent;
+  --color-btn-inset-shadow: 0 0 transparent;
+
+  /* ─── Inputs (textarea, comment field) ─────────────────────────── */
+  --color-input-bg: var(--warm-bg-base);
+  --color-input-contrast-bg: var(--warm-bg-elevated);
+  --color-input-border: var(--warm-border);
+  --color-input-disabled-bg: var(--warm-bg-elevated);
+  --color-input-disabled-border: var(--warm-border);
+
+  /* ─── Action lists / dropdowns / picker ─────────────────────────── */
+  --color-action-list-item-default-hover-bg: var(--warm-bg-elevated-strong);
+  --color-action-list-item-default-active-bg: var(--warm-bg-elevated-strong);
+
+  /* ─── Avatar ────────────────────────────────────────────────────── */
+  --color-avatar-bg: var(--warm-bg-elevated);
+  --color-avatar-border: var(--warm-border);
+
+  /* ─── Counters ──────────────────────────────────────────────────── */
+  --color-counter-border: transparent;
+
+  /* ─── Status colors (kept conventional for legibility) ─────────── */
+  --color-success-fg: #57ab5a;
+  --color-attention-fg: #c69026;
+  --color-danger-fg: #e5534b;
+
+  /* ─── Reactions (👍 ❤️ 🚀 etc.) — amber hover ──────────────────── */
+  --color-social-reaction-bg-hover: var(--warm-accent-soft);
+  --color-social-reaction-bg-reacted-hover: var(--warm-accent-soft);
+
+  /* ─── Markdown rendering inside comments ───────────────────────── */
+  --color-markdown-code-bg: var(--warm-bg-elevated);
+  --color-markdown-blockquote-border: var(--warm-accent);
+  --color-markdown-table-border: var(--warm-border);
+  --color-markdown-table-tr-border: var(--warm-border);
+  --color-markdown-frame-border: var(--warm-border);
+
+  /* ─── Syntax highlighting — close to github-dark-dimmed
+         (same family Shiki uses in the site so comment code looks
+         consistent with post code) ────────────────────────────────── */
+  --color-prettylights-syntax-comment: #6e7681;
+  --color-prettylights-syntax-constant: #6cb6ff;
+  --color-prettylights-syntax-entity: #dcbdfb;
+  --color-prettylights-syntax-storage-modifier-import: #ece8e1;
+  --color-prettylights-syntax-entity-tag: #8ddb8c;
+  --color-prettylights-syntax-keyword: #f47067;
+  --color-prettylights-syntax-string: #96d0ff;
+  --color-prettylights-syntax-variable: #f69d50;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #e5534b;
+  --color-prettylights-syntax-invalid-illegal-text: #f0f3f6;
+  --color-prettylights-syntax-invalid-illegal-bg: #922323;
+  --color-prettylights-syntax-carriage-return-text: #f0f3f6;
+  --color-prettylights-syntax-carriage-return-bg: #ad2c2c;
+  --color-prettylights-syntax-string-regexp: #8ddb8c;
+  --color-prettylights-syntax-markup-list: #eac55f;
+  --color-prettylights-syntax-markup-heading: var(--warm-accent);
+  --color-prettylights-syntax-markup-italic: #ece8e1;
+  --color-prettylights-syntax-markup-bold: #ece8e1;
+  --color-prettylights-syntax-markup-deleted-text: #ffd8d3;
+  --color-prettylights-syntax-markup-deleted-bg: #78191b;
+  --color-prettylights-syntax-markup-inserted-text: #b4f1b4;
+  --color-prettylights-syntax-markup-inserted-bg: #1b4721;
+  --color-prettylights-syntax-markup-changed-text: #ffddb0;
+  --color-prettylights-syntax-markup-changed-bg: #682d0f;
+  --color-prettylights-syntax-markup-ignored-text: #adbac7;
+  --color-prettylights-syntax-markup-ignored-bg: #255078;
+  --color-prettylights-syntax-meta-diff-range: #dcbdfb;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #545d68;
+}
+
+/* Suppress the Giscus loader spinner background image — looks out of
+   place on dark warm-black. The empty container still works as
+   indication of loading. */
+main .pagination-loader-container,
+main .gsc-loading-image {
+  background-image: none;
+}
+
+/* The "Powered by Giscus" footer link — kept but de-emphasized. */
+main .gsc-tos {
+  color: var(--warm-fg-dim);
+  font-size: 0.75rem;
+}
+main .gsc-tos a {
+  color: var(--warm-fg-muted);
+}

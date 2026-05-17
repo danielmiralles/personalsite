@@ -5,6 +5,11 @@ import {
   GISCUS_CATEGORY,
   GISCUS_CATEGORY_ID,
 } from "../lib/giscus.ts";
+
+// Custom theme URL must be HTTPS and same-origin to a host that allows
+// CORS for giscus.app. nginx serves /giscus-theme.css with the right
+// Access-Control-Allow-Origin header.
+const themeURL = new URL("/giscus-theme.css", Astro.site).toString();
 ---
 
 <section
@@ -54,7 +59,7 @@ import {
     data-reactions-enabled="1"
     data-emit-metadata="0"
     data-input-position="top"
-    data-theme="dark_dimmed"
+    data-theme={themeURL}
     data-lang="es"
     data-loading="lazy"
     crossorigin="anonymous"

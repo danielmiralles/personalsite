@@ -1,0 +1,8 @@
+{
+  "processed": [
+    "pildoras/kafka-rebalance",
+    "playbooks/coolify-vps",
+    "posts/microservicio-no-es-microservicio"
+  ],
+  "last_run": null
+}

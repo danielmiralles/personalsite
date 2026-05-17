@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Tag from "../../components/Tag.astro";
+import Comments from "../../components/Comments.astro";
 import { personSchema, personRef } from "../../lib/schema.ts";
 
 type CollectionName = "posts" | "playbooks" | "pildoras";
@@ -189,4 +190,6 @@ const jsonLd = {
       </footer>
     )}
   </article>
+
+  <Comments />
 </Layout>

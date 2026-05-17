@@ -2,7 +2,8 @@
   "processed": [
     "pildoras/kafka-rebalance",
     "playbooks/coolify-vps",
-    "posts/microservicio-no-es-microservicio"
+    "posts/microservicio-no-es-microservicio",
+    "posts/perdi-eventos-en-produccion"
   ],
-  "last_run": null
+  "last_run": "2026-05-17T09:07:52.365Z"
 }

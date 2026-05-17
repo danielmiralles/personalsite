@@ -1,0 +1,135 @@
+---
+import LatestCard from "./LatestCard.astro";
+
+type ContentType = "post" | "playbook" | "pildora";
+
+interface CardItem {
+  type: ContentType;
+  title: string;
+  excerpt: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  href: string;
+}
+
+interface Props {
+  items: CardItem[];
+  searchPlaceholder?: string;
+}
+
+const {
+  items,
+  searchPlaceholder = "buscar por título, descripción o tag…",
+} = Astro.props;
+
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
+
+const itemsWithHaystack = items.map((item) => ({
+  ...item,
+  haystack: normalize(
+    `${item.title} ${item.excerpt} ${item.tags.join(" ")}`,
+  ),
+}));
+---
+
+<div data-searchable>
+  <div class="relative mb-6">
+    <span
+      class="absolute left-4 top-1/2 -translate-y-1/2 text-sm pointer-events-none"
+      style="font-family: var(--font-mono); color: var(--color-fg-dim);"
+    >$</span>
+    <input
+      type="search"
+      placeholder={searchPlaceholder}
+      data-search-input
+      autocomplete="off"
+      aria-label="Buscar"
+      class="w-full pl-10 pr-4 py-3 rounded-md border outline-none text-sm transition-colors"
+      style="
+        background-color: var(--color-bg-elevated);
+        border-color: var(--color-border-subtle);
+        color: var(--color-fg-primary);
+        font-family: var(--font-mono);
+      "
+    />
+  </div>
+
+  <p
+    class="text-xs mb-8"
+    style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+  >
+    <span style="color: var(--color-fg-dim);">//</span>
+    <span data-count>{items.length}</span> entrada{items.length === 1 ? "" : "s"}
+  </p>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-card-grid>
+    {itemsWithHaystack.map((item) => (
+      <div data-card data-search-haystack={item.haystack}>
+        <LatestCard
+          type={item.type}
+          title={item.title}
+          excerpt={item.excerpt}
+          date={item.date}
+          readTime={item.readTime}
+          tag={item.tags[0] ?? ""}
+          href={item.href}
+        />
+      </div>
+    ))}
+  </div>
+
+  <p
+    class="hidden text-center mt-12 text-sm"
+    style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    data-no-results
+  >
+    <span style="color: var(--color-fg-dim);">$</span> no se encontraron resultados.
+  </p>
+</div>
+
+<style>
+  [data-search-input]::placeholder {
+    color: var(--color-fg-dim);
+  }
+  [data-search-input]:focus {
+    border-color: var(--color-accent) !important;
+  }
+</style>
+
+<script>
+  function normalize(s: string): string {
+    return s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "");
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-searchable]").forEach((container) => {
+    const input = container.querySelector<HTMLInputElement>("[data-search-input]");
+    const cards = container.querySelectorAll<HTMLElement>("[data-card]");
+    const counter = container.querySelector<HTMLElement>("[data-count]");
+    const noResults = container.querySelector<HTMLElement>("[data-no-results]");
+
+    function filter() {
+      if (!input) return;
+      const q = normalize(input.value.trim());
+      let visible = 0;
+      cards.forEach((card) => {
+        const haystack = card.dataset.searchHaystack ?? "";
+        const match = !q || haystack.includes(q);
+        card.style.display = match ? "" : "none";
+        if (match) visible++;
+      });
+      if (counter) counter.textContent = String(visible);
+      if (noResults) noResults.classList.toggle("hidden", visible > 0);
+    }
+
+    input?.addEventListener("input", filter);
+  });
+</script>

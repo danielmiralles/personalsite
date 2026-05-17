@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import SearchableCards from "../../components/SearchableCards.astro";
+
+const entries = await getCollection("playbooks", ({ data }) => !data.draft);
+const sorted = entries.sort((a, b) => +b.data.date - +a.data.date);
+
+const dateFmt = new Intl.DateTimeFormat("es-ES", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+});
+
+const items = sorted.map((entry) => ({
+  type: "playbook" as const,
+  title: entry.data.title,
+  excerpt: entry.data.excerpt,
+  date: dateFmt.format(entry.data.date),
+  readTime: entry.data.readTime,
+  tags: entry.data.tags,
+  href: `/playbooks/${entry.id}`,
+}));
+
+const title = "Playbooks — Daniel Miralles";
+const description =
+  "Guías paso a paso para instalar, configurar o desplegar herramientas sin morir en el intento. Honestas, accionables y probadas en producción.";
+---
+
+<Layout title={title} description={description}>
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-10">
+    <p class="text-sm mb-4" style="font-family: var(--font-mono); color: var(--color-fg-muted);">
+      <span style="color: var(--color-fg-dim);">$</span> cd ~/playbooks
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight" style="color: var(--color-fg-primary);">
+      <span style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.55em;">## </span>Playbooks
+    </h1>
+    <p class="text-lg max-w-[60ch] leading-relaxed" style="color: var(--color-fg-muted);">
+      {description}
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-24">
+    <SearchableCards items={items} searchPlaceholder="buscar en playbooks…" />
+  </section>
+</Layout>

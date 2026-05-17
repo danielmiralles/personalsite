@@ -1,0 +1,32 @@
+---
+const items = [
+  { href: "/posts", label: "posts" },
+  { href: "/playbooks", label: "playbooks" },
+  { href: "/pildoras", label: "píldoras" },
+];
+---
+<nav class="sticky top-0 z-50 backdrop-blur-md border-b" style="background-color: color-mix(in srgb, var(--color-bg-base) 75%, transparent); border-color: var(--color-border-subtle);">
+  <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between" style="font-family: var(--font-mono);">
+    <a href="/" class="text-sm transition-colors" style="color: var(--color-fg-primary);">
+      <span style="color: var(--color-fg-muted);">$</span> daniel<span style="color: var(--color-accent);">@</span>valencia
+    </a>
+    <ul class="flex gap-5 text-sm">
+      {items.map(({ href, label }) => (
+        <li>
+          <a href={href} class="transition-colors hover:opacity-100" style="color: var(--color-fg-muted);">
+            <span style="color: var(--color-fg-dim);">~/</span><span class="hover:text-[var(--color-accent)]">{label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  nav a:hover {
+    color: var(--color-accent) !important;
+  }
+  nav a:hover span {
+    color: var(--color-accent);
+  }
+</style>

@@ -1,0 +1,192 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Tag from "../../components/Tag.astro";
+
+type CollectionName = "posts" | "playbooks" | "pildoras";
+type AnyEntry =
+  | CollectionEntry<"posts">
+  | CollectionEntry<"playbooks">
+  | CollectionEntry<"pildoras">;
+
+export async function getStaticPaths() {
+  const names: CollectionName[] = ["posts", "playbooks", "pildoras"];
+  const all = [];
+  for (const name of names) {
+    const entries = await getCollection(name, ({ data }) => !data.draft);
+    for (const entry of entries) {
+      all.push({
+        params: { collection: name, slug: entry.id },
+        props: { entry },
+      });
+    }
+  }
+  return all;
+}
+
+const { entry } = Astro.props as { entry: AnyEntry };
+const { Content } = await render(entry);
+
+const collectionLabel: Record<CollectionName, string> = {
+  posts: "post",
+  playbooks: "playbook",
+  pildoras: "píldora",
+};
+
+const collectionPath: Record<CollectionName, string> = {
+  posts: "/posts",
+  playbooks: "/playbooks",
+  pildoras: "/pildoras",
+};
+
+const colName = entry.collection as CollectionName;
+const colLabel = collectionLabel[colName];
+const colPath = collectionPath[colName];
+
+const dateFmt = new Intl.DateTimeFormat("es-ES", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const formattedDate = dateFmt.format(entry.data.date);
+const isoDate = entry.data.date.toISOString();
+
+const hasLearned =
+  entry.collection === "pildoras" &&
+  "learned" in entry.data &&
+  typeof entry.data.learned === "string" &&
+  entry.data.learned.length > 0;
+
+const hasDifficulty =
+  entry.collection === "playbooks" &&
+  "difficulty" in entry.data &&
+  typeof entry.data.difficulty === "string";
+
+const learnedText =
+  hasLearned && "learned" in entry.data
+    ? (entry.data.learned as string)
+    : undefined;
+const difficultyText =
+  hasDifficulty && "difficulty" in entry.data
+    ? (entry.data.difficulty as string)
+    : undefined;
+
+const pageTitle = `${entry.data.title} — Daniel Miralles`;
+const ogImagePath = `/og/${entry.collection}/${entry.id}.png`;
+
+const siteOrigin = Astro.site?.origin ?? "";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: entry.data.title,
+  description: entry.data.excerpt,
+  datePublished: isoDate,
+  inLanguage: "es-ES",
+  author: {
+    "@type": "Person",
+    name: "Daniel Miralles",
+    url: siteOrigin,
+  },
+  publisher: {
+    "@type": "Person",
+    name: "Daniel Miralles",
+  },
+  keywords: entry.data.tags.join(", "),
+  articleSection: colLabel,
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": `${siteOrigin}/${entry.collection}/${entry.id}`,
+  },
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={entry.data.excerpt}
+  ogImage={ogImagePath}
+  ogType="article"
+  publishedTime={isoDate}
+  tags={entry.data.tags}
+  jsonLd={jsonLd}
+>
+  <article class="max-w-3xl mx-auto px-6 pt-12 pb-24">
+    <nav class="text-sm mb-6" style="font-family: var(--font-mono); color: var(--color-fg-muted);" aria-label="breadcrumb">
+      <a href={colPath} class="link-underline transition-colors" style="color: var(--color-fg-muted);">
+        <span style="color: var(--color-fg-dim);">$ cd ~/</span>{entry.collection}
+      </a>
+    </nav>
+
+    <header class="mb-10">
+      <div
+        class="text-xs mb-5 flex flex-wrap items-center gap-3"
+        style="font-family: var(--font-mono);"
+      >
+        <span style="color: var(--color-accent); letter-spacing: 0.08em;">
+          {colLabel.toUpperCase()}
+        </span>
+        <span style="color: var(--color-fg-dim);">·</span>
+        <time datetime={isoDate} style="color: var(--color-fg-muted);">{formattedDate}</time>
+        <span style="color: var(--color-fg-dim);">·</span>
+        <span style="color: var(--color-fg-muted);">{entry.data.readTime} de lectura</span>
+        {difficultyText && (
+          <>
+            <span style="color: var(--color-fg-dim);">·</span>
+            <span style="color: var(--color-fg-muted);">dificultad: {difficultyText}</span>
+          </>
+        )}
+      </div>
+
+      <h1
+        class="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]"
+        style="color: var(--color-fg-primary);"
+      >
+        {entry.data.title}
+      </h1>
+
+      <p class="mt-5 text-lg leading-relaxed max-w-[65ch]" style="color: var(--color-fg-muted);">
+        {entry.data.excerpt}
+      </p>
+    </header>
+
+    {learnedText && (
+      <aside
+        class="mb-10 p-5 rounded-md border-l-4"
+        style="
+          background-color: var(--color-accent-soft);
+          border-color: var(--color-accent);
+        "
+        aria-label="Lo aprendido"
+      >
+        <p
+          class="text-xs uppercase mb-2 tracking-wider"
+          style="font-family: var(--font-mono); color: var(--color-accent);"
+        >
+          // lo aprendido
+        </p>
+        <p class="leading-relaxed" style="color: var(--color-fg-primary);">{learnedText}</p>
+      </aside>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {entry.data.tags.length > 0 && (
+      <footer class="mt-16 pt-8 border-t" style="border-color: var(--color-border-subtle);">
+        <p
+          class="text-xs mb-3"
+          style="font-family: var(--font-mono); color: var(--color-fg-dim);"
+        >
+          <span style="color: var(--color-fg-muted);">//</span> tags
+        </p>
+        <div class="flex flex-wrap gap-2">
+          {entry.data.tags.map((tag) => (
+            <Tag name={tag} />
+          ))}
+        </div>
+      </footer>
+    )}
+  </article>
+</Layout>

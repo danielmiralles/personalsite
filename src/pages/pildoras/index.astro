@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import SearchableCards from "../../components/SearchableCards.astro";
+
+const entries = await getCollection("pildoras", ({ data }) => !data.draft);
+const sorted = entries.sort((a, b) => +b.data.date - +a.data.date);
+
+const dateFmt = new Intl.DateTimeFormat("es-ES", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+});
+
+const items = sorted.map((entry) => ({
+  type: "pildora" as const,
+  title: entry.data.title,
+  excerpt: entry.data.excerpt,
+  date: dateFmt.format(entry.data.date),
+  readTime: entry.data.readTime,
+  tags: entry.data.tags,
+  href: `/pildoras/${entry.id}`,
+}));
+
+const title = "Píldoras — Daniel Miralles";
+const description =
+  "Lecciones cortas de errores que cometí en producción y lo que aprendí. Un bug, una causa raíz, una lección — para que tú no tengas que pasarlo.";
+---
+
+<Layout title={title} description={description}>
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-10">
+    <p class="text-sm mb-4" style="font-family: var(--font-mono); color: var(--color-fg-muted);">
+      <span style="color: var(--color-fg-dim);">$</span> cd ~/pildoras
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight" style="color: var(--color-fg-primary);">
+      <span style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.55em;">## </span>Píldoras
+    </h1>
+    <p class="text-lg max-w-[60ch] leading-relaxed" style="color: var(--color-fg-muted);">
+      {description}
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-24">
+    <SearchableCards items={items} searchPlaceholder="buscar en píldoras…" />
+  </section>
+</Layout>

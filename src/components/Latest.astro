@@ -1,0 +1,80 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import LatestCard from "./LatestCard.astro";
+
+type CollectionName = "posts" | "playbooks" | "pildoras";
+type ContentType = "post" | "playbook" | "pildora";
+
+const collectionToType: Record<CollectionName, ContentType> = {
+  posts: "post",
+  playbooks: "playbook",
+  pildoras: "pildora",
+};
+
+async function getLatest(name: CollectionName) {
+  const entries = await getCollection(name, ({ data }) => !data.draft);
+  return entries.sort((a, b) => +b.data.date - +a.data.date)[0];
+}
+
+const [latestPost, latestPlaybook, latestPildora] = await Promise.all([
+  getLatest("posts"),
+  getLatest("playbooks"),
+  getLatest("pildoras"),
+]);
+
+type AnyEntry =
+  | CollectionEntry<"posts">
+  | CollectionEntry<"playbooks">
+  | CollectionEntry<"pildoras">;
+
+const dateFmt = new Intl.DateTimeFormat("es-ES", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+});
+
+const items = [latestPost, latestPlaybook, latestPildora]
+  .filter((e): e is AnyEntry => Boolean(e))
+  .map((entry) => ({
+    type: collectionToType[entry.collection as CollectionName],
+    title: entry.data.title,
+    excerpt: entry.data.excerpt,
+    date: dateFmt.format(entry.data.date),
+    readTime: entry.data.readTime,
+    tag: entry.data.tags[0] ?? "",
+    href: `/${entry.collection}/${entry.id}`,
+  }));
+---
+
+<section class="max-w-5xl mx-auto px-6 py-16">
+  <div class="flex items-baseline justify-between mb-10">
+    <h2 class="text-3xl md:text-4xl font-bold" style="color: var(--color-fg-primary);">
+      <span style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.75em;">## </span>Lo último
+    </h2>
+    <a
+      href="/posts"
+      class="text-sm link-underline transition-colors"
+      style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    >
+      ver todo →
+    </a>
+  </div>
+
+  {items.length === 0 ? (
+    <p style="color: var(--color-fg-muted);">No hay contenido publicado todavía.</p>
+  ) : (
+    <div class="grid md:grid-cols-3 gap-6">
+      {items.map((item) => (
+        <LatestCard
+          type={item.type}
+          title={item.title}
+          excerpt={item.excerpt}
+          date={item.date}
+          readTime={item.readTime}
+          tag={item.tag}
+          href={item.href}
+        />
+      ))}
+    </div>
+  )}
+</section>

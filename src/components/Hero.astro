@@ -1,0 +1,61 @@
+---
+import { Image } from "astro:assets";
+import heroPhoto from "../assets/daniel-hero.png";
+---
+
+<section class="max-w-5xl mx-auto px-6 pt-20 pb-20 md:pt-28 md:pb-24">
+  <div class="grid md:grid-cols-[1fr_320px] gap-12 md:gap-16 items-center">
+
+    <div class="fade-in">
+      <p class="text-sm mb-4" style="font-family: var(--font-mono); color: var(--color-fg-muted);">
+        <span style="color: var(--color-fg-dim);">$</span> whoami
+      </p>
+
+      <h1
+        class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight"
+        style="color: var(--color-fg-primary);"
+      >
+        Daniel <span style="color: var(--color-accent);">Miralles</span><span
+          class="cursor-blink"
+          aria-hidden="true"
+        ></span>
+      </h1>
+
+      <p
+        class="mt-6 text-lg max-w-[60ch] leading-relaxed"
+        style="color: var(--color-fg-muted);"
+      >
+        Solution Architect. 14 años de sistemas distribuidos, microservicios y
+        errores que enseñaron más que cualquier curso.
+      </p>
+
+      <div
+        class="mt-8 text-sm flex flex-wrap gap-x-6 gap-y-2"
+        style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+      >
+        <span><span style="color: var(--color-fg-dim);">›</span> Valencia, ES</span>
+        <span><span style="color: var(--color-fg-dim);">›</span> Java · Spring · AWS</span>
+        <span><span style="color: var(--color-fg-dim);">›</span> Distributed Systems</span>
+      </div>
+    </div>
+
+    <div class="relative mx-auto md:mx-0 w-full max-w-[320px]">
+      <div
+        class="absolute inset-4 rounded-full blur-3xl opacity-25 pointer-events-none"
+        style="background-color: var(--color-accent);"
+        aria-hidden="true"
+      >
+      </div>
+      <Image
+        src={heroPhoto}
+        alt="Retrato de Daniel Miralles"
+        widths={[280, 360, 640]}
+        sizes="(min-width: 768px) 320px, 280px"
+        class="relative rounded-md w-full"
+        style="filter: url(#duotone-amber); aspect-ratio: 1 / 1; object-fit: cover;"
+        loading="eager"
+      />
+    </div>
+
+  </div>
+</section>

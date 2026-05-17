@@ -1,0 +1,49 @@
+---
+title: "Coolify en tu VPS sin morir en el intento"
+excerpt: "Desde el VPS limpio hasta tu primer deploy automático con dominio propio y HTTPS. Sin saltos de fe, paso por paso."
+date: 2026-05-10
+readTime: "5 min"
+tags: ["coolify", "vps", "self-hosting", "devops"]
+difficulty: "principiante"
+---
+
+Coolify es lo que necesitabas hace tres años: un Heroku self-hosted que corre en tu VPS, te da deploys automáticos desde Git, HTTPS con Let's Encrypt y soporte para Docker, todo desde una UI decente.
+
+Aquí va el camino mínimo sin saltos de fe, asumiendo un VPS limpio con Ubuntu 22.04+.
+
+## 1. Requisitos mínimos
+
+- VPS con **2 GB de RAM** mínimo (4 GB recomendado)
+- Ubuntu 22.04 o 24.04 LTS
+- Un dominio apuntando al VPS (registro `A` a la IP pública)
+- Acceso SSH como root o sudo
+
+## 2. Instalación en una sola línea
+
+```bash
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | sudo bash
+```
+
+Esto te instala Docker si no lo tienes, levanta los contenedores de Coolify y te deja la UI en `http://tu-ip:8000`.
+
+## 3. Primer acceso y dominio
+
+Entra a `http://tu-ip:8000`, crea la cuenta de admin (es la única, así que cuida la contraseña).
+
+Antes de cualquier otra cosa, ve a **Settings → Instance Settings** y pon tu dominio. Coolify se encarga de pedir el certificado SSL y a partir de ahí accedes vía `https://tu-dominio.com`.
+
+## 4. Conecta tu repo
+
+**Sources → New Source → GitHub App**. Coolify te lleva por el flujo de instalar la GitHub App. La ventaja sobre OAuth: el token vive en GitHub, no en Coolify, y puedes revocarlo desde la UI de GitHub cuando quieras.
+
+## 5. El primer deploy
+
+**New Resource → Public/Private Repo**, eliges el repo y Coolify autodetecta si es Nixpacks, Dockerfile o Static. Para un sitio Astro estático, detecta automáticamente que el build es `npm run build` y el output `dist/`.
+
+Click en **Deploy**, mira los logs en vivo, y en 60-90 segundos tienes el sitio público.
+
+## Lo que aprendí rompiendo cosas
+
+- **No expongas el puerto 8000 públicamente** sin firewall. Es la UI de admin. Bloquea `8000` excepto desde tu IP fija o usa un túnel.
+- **Backups automáticos** desde Settings → Backups. Actívalos el día uno. El día que el VPS se cuelga lo vas a agradecer.
+- **Resource limits en cada app**. Por defecto Coolify no limita CPU/memoria. Un contenedor que se vuelve loco puede tumbar a todos los demás.

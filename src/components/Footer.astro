@@ -1,0 +1,33 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="mt-24 border-t" style="border-color: var(--color-border-subtle);">
+  <div
+    class="max-w-5xl mx-auto px-6 py-8 text-xs flex flex-wrap items-center gap-x-4 gap-y-2"
+    style="font-family: var(--font-mono); color: var(--color-fg-dim);"
+  >
+    <span><span style="color: var(--color-fg-muted);">//</span> built with astro · hosted on coolify · {year}</span>
+    <span style="color: var(--color-fg-dim);">·</span>
+    <a
+      href="mailto:contact@danielmiralles.com"
+      class="link-underline transition-colors"
+      style="color: var(--color-fg-muted);"
+    >
+      contact@danielmiralles.com
+    </a>
+    <span style="color: var(--color-fg-dim);">·</span>
+    <a
+      href="/rss.xml"
+      class="link-underline transition-colors inline-flex items-center gap-1.5"
+      style="color: var(--color-fg-muted);"
+      aria-label="Feed RSS"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 11a9 9 0 0 1 9 9"/>
+        <path d="M4 4a16 16 0 0 1 16 16"/>
+        <circle cx="5" cy="19" r="1"/>
+      </svg>
+      rss
+    </a>
+  </div>
+</footer>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  name: string;
+  href?: string;
+}
+
+const { name, href } = Astro.props;
+
+const baseClass =
+  "inline-block text-xs px-2.5 py-1 rounded transition-colors";
+const baseStyle =
+  "font-family: var(--font-mono); background-color: var(--color-accent-soft); color: var(--color-accent);";
+---
+
+{href ? (
+  <a class={baseClass} style={baseStyle} href={href}>#{name}</a>
+) : (
+  <span class={baseClass} style={baseStyle}>#{name}</span>
+)}

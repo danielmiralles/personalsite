@@ -1,0 +1,67 @@
+---
+type ContentType = "post" | "playbook" | "pildora";
+
+interface Props {
+  type: ContentType;
+  title: string;
+  excerpt: string;
+  date: string;
+  readTime: string;
+  tag: string;
+  href?: string;
+}
+
+const { type, title, excerpt, date, readTime, tag, href = "#" } = Astro.props;
+
+const typeMeta: Record<ContentType, { label: string; colorVar: string }> = {
+  post:     { label: "POST",     colorVar: "#7dd3fc" },  // sky-300 ish
+  playbook: { label: "PLAYBOOK", colorVar: "var(--color-accent)" },
+  pildora:  { label: "PÍLDORA",  colorVar: "#86efac" },  // green-300 ish
+};
+
+const meta = typeMeta[type];
+---
+
+<a
+  href={href}
+  class="group block border rounded-md p-6 transition-colors fade-in"
+  style="border-color: var(--color-border-subtle); background-color: var(--color-bg-elevated);"
+>
+  <div
+    class="text-xs mb-3 flex items-center gap-2"
+    style="font-family: var(--font-mono);"
+  >
+    <span style={`color: ${meta.colorVar}; letter-spacing: 0.08em;`}>{meta.label}</span>
+    <span style="color: var(--color-fg-dim);">·</span>
+    <span style="color: var(--color-fg-muted);">{readTime}</span>
+    <span style="color: var(--color-fg-dim);">·</span>
+    <span style="color: var(--color-fg-muted);">{date}</span>
+  </div>
+
+  <h3
+    class="text-xl font-semibold mb-2 transition-colors"
+    style="color: var(--color-fg-primary); line-height: 1.3;"
+  >
+    {title}
+  </h3>
+
+  <p
+    class="text-base mb-4 leading-relaxed"
+    style="color: var(--color-fg-muted);"
+  >
+    {excerpt}
+  </p>
+
+  <div class="text-xs" style="font-family: var(--font-mono); color: var(--color-fg-dim);">
+    #{tag}
+  </div>
+</a>
+
+<style>
+  a.group:hover {
+    border-color: var(--color-accent) !important;
+  }
+  a.group:hover h3 {
+    color: var(--color-accent);
+  }
+</style>

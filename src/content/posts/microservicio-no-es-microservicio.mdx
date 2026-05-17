@@ -1,0 +1,31 @@
+---
+title: "Por qué tu microservicio no es un microservicio"
+excerpt: "Si tu equipo despliega 8 servicios juntos cada vez que sale un cambio, no tienes microservicios — tienes un monolito distribuido. Y eso es peor que un monolito."
+date: 2026-05-16
+readTime: "4 min"
+tags: ["arquitectura", "microservicios", "distribuidos"]
+---
+
+Hay una pregunta que hago en cada entrevista de arquitectura, y la respuesta separa rápido a quien entendió el concepto de quien repite buzzwords:
+
+> ¿Puedes desplegar un servicio de tu sistema sin coordinar con otro equipo?
+
+Si la respuesta es "no", **no tienes microservicios**. Tienes un monolito distribuido. Y un monolito distribuido es peor que un monolito clásico — tienes todos los costos de operar muchos servicios y ninguno de los beneficios.
+
+## Los tres síntomas
+
+Estos son los tres que veo más seguido en proyectos que se dicen "microservicios":
+
+1. **Despliegues coordinados** — el equipo A no puede subir su cambio hasta que el equipo B suba el suyo
+2. **Base de datos compartida** — varios servicios escriben sobre las mismas tablas
+3. **Contratos implícitos** — cambias un campo en un servicio y se rompe otro en tiempo de ejecución
+
+Cualquiera de los tres ya descalifica la arquitectura como "microservicios".
+
+## El test rápido
+
+La pregunta canónica de Sam Newman sigue siendo la mejor:
+
+> Can this service be deployed independently?
+
+Si la respuesta honesta es no, lo demás (Kubernetes, Kafka, service mesh) es cosmética sobre el mismo problema.

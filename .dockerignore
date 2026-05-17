@@ -1,0 +1,36 @@
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Local-only inputs (CV + source photos)
+_inputs
+
+# Node / build outputs
+node_modules
+dist
+.astro
+.cache
+
+# Env
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Docs not needed in the image
+DEPLOY.md
+README.md
+*.md.bak
+
+# Test outputs and tmp
+coverage
+.nyc_output
+*.log
+npm-debug.log*

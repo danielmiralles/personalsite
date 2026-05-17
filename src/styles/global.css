@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/geist-mono/index.css";
+
+/* ---------------------------------------------------------------- */
+/*  Design Tokens — Warm Terminal                                   */
+/* ---------------------------------------------------------------- */
+
+@theme {
+  --color-bg-base: #0c0b0a;
+  --color-bg-elevated: #16140f;
+  --color-border-subtle: #26221b;
+
+  --color-fg-primary: #ece8e1;
+  --color-fg-muted: #8a847a;
+  --color-fg-dim: #5a544a;
+
+  --color-accent: #f5a524;
+  --color-accent-soft: rgba(245, 165, 36, 0.13);
+
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "JetBrains Mono", monospace;
+
+  --text-base: 1.125rem;
+  --leading-base: 1.65;
+}
+
+/* ---------------------------------------------------------------- */
+/*  Base                                                            */
+/* ---------------------------------------------------------------- */
+
+html {
+  background-color: var(--color-bg-base);
+  color: var(--color-fg-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-bg-base);
+}
+
+/* Mono-style elements */
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+}
+
+/* Inline code on amber-soft */
+:not(pre) > code {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Link underline animation */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.cursor-blink {
+  display: inline-block;
+  width: 0.55ch;
+  height: 1em;
+  background-color: var(--color-accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+/* Fade-in on scroll */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeInUp 200ms ease-out both;
+}
+
+/* ---------------------------------------------------------------- */
+/*  Prose — typography for article bodies                           */
+/* ---------------------------------------------------------------- */
+
+.prose {
+  color: var(--color-fg-primary);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  max-width: 65ch;
+}
+
+.prose > * + * {
+  margin-top: 1.25em;
+}
+
+.prose h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2.25em;
+  margin-bottom: 0.6em;
+  letter-spacing: -0.01em;
+}
+
+.prose h2::before {
+  content: "## ";
+  font-family: var(--font-mono);
+  color: var(--color-fg-dim);
+  font-size: 0.72em;
+  font-weight: 400;
+}
+
+.prose h3 {
+  font-size: 1.3125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+
+.prose h3::before {
+  content: "### ";
+  font-family: var(--font-mono);
+  color: var(--color-fg-dim);
+  font-size: 0.72em;
+  font-weight: 400;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  transition: border-color 200ms ease;
+}
+
+.prose a:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+.prose strong {
+  color: var(--color-fg-primary);
+  font-weight: 600;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.25rem;
+  font-style: italic;
+  color: var(--color-fg-muted);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.prose blockquote p {
+  color: var(--color-fg-muted);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+
+.prose ul {
+  list-style: none;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: "›";
+  position: absolute;
+  left: -1.25em;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose ol > li::marker {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.prose li {
+  margin-top: 0.4em;
+}
+
+.prose li > p {
+  margin-top: 0.4em;
+}
+
+.prose pre {
+  background-color: var(--color-bg-elevated);
+  padding: 1.1rem 1.4rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  border: 1px solid var(--color-border-subtle);
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose pre code {
+  background-color: transparent !important;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: 3em 0;
+}
+
+.prose img {
+  border-radius: 6px;
+  width: 100%;
+  height: auto;
+}

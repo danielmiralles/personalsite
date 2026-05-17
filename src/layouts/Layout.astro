@@ -1,0 +1,87 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import DuotoneFilter from "../components/DuotoneFilter.astro";
+
+type OgType = "website" | "article";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: OgType;
+  publishedTime?: string;
+  tags?: string[];
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title = "Daniel Miralles — Solution Architect",
+  description = "Solution Architect. 14 años de sistemas distribuidos, microservicios y errores que enseñaron más que cualquier curso. Escribo en español sobre backend, arquitectura y AI-augmented development.",
+  ogImage,
+  ogType = "website",
+  publishedTime,
+  tags,
+  jsonLd,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImageURL = ogImage ? new URL(ogImage, Astro.site).toString() : undefined;
+const siteName = "Daniel Miralles";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0c0b0a" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="es" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="es_ES" />
+    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+
+    <meta name="twitter:card" content={ogImageURL ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+    {ogType === "article" && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {ogType === "article" && tags && tags.map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Daniel Miralles — todo" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Daniel Miralles — Posts" href="/posts/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Daniel Miralles — Playbooks" href="/playbooks/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Daniel Miralles — Píldoras" href="/pildoras/rss.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    {jsonLd && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <DuotoneFilter />
+    <Nav />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

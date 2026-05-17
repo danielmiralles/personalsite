@@ -1,0 +1,46 @@
+---
+title: "El día que el rebalance de Kafka me costó 6 horas"
+excerpt: "session.timeout.ms y max.poll.interval.ms no son lo mismo. Aprendí la diferencia en producción. Tú no tienes que hacerlo."
+date: 2026-05-03
+readTime: "3 min"
+tags: ["kafka", "consumer", "produccion"]
+learned: "session.timeout.ms mide heartbeats; max.poll.interval.ms mide tiempo entre poll(). Confundirlos te dispara rebalances infinitos."
+---
+
+## El síntoma
+
+A las 3 de la mañana, alerta: el consumer group de pagos se rebalancea cada 60 segundos en loop. Los mensajes se procesan, pero cada rebalance vuelve a empezar desde el último offset confirmado. Reprocesos masivos. Idempotencia salvándonos el día.
+
+## El supuesto
+
+Mi modelo mental decía: si el consumer está vivo (heartbeat), Kafka no lo va a sacar del grupo. Y los heartbeats salían bien — eso lo confirmamos en los logs.
+
+Estaba equivocado.
+
+## Lo que realmente pasa
+
+Kafka tiene **dos timers distintos** para sacar a un consumer del grupo, y trabajan independientes:
+
+- **`session.timeout.ms`** (default: 45s) — si Kafka no recibe heartbeat en este tiempo, considera al consumer caído. Los heartbeats viajan en un thread separado, así que mientras tu consumer no muera, los heartbeats siguen.
+- **`max.poll.interval.ms`** (default: 5 min) — el tiempo máximo entre dos llamadas a `poll()`. Si tu lógica de procesamiento tarda más que esto entre poll y poll, Kafka asume que el consumer está colgado y dispara rebalance, **aunque los heartbeats sigan llegando**.
+
+Mi pipeline procesaba batches que ocasionalmente tomaban 6-7 minutos por enriquecimiento de datos externo. Heartbeats perfectos, pero `poll()` se demoraba demasiado. Resultado: rebalance, reproceso, rebalance, reproceso.
+
+## La solución
+
+Tres líneas en el `application.yml`:
+
+```yaml
+spring.kafka.consumer.properties:
+  max.poll.interval.ms: 900000   # 15 min, margen para el peor batch
+  max.poll.records: 50           # batches más pequeños = poll() más frecuente
+  session.timeout.ms: 45000      # default, no lo toqué
+```
+
+Y antes de eso: separa el procesamiento pesado del consumer thread. Si tu lógica puede tardar más que `max.poll.interval.ms`, mete un thread pool y devuelve el poll lo más rápido posible.
+
+## La lección
+
+> Los heartbeats te dicen que el consumer respira. `max.poll.interval.ms` te dice si está haciendo algo útil.
+
+Son cosas distintas. Confundirlas cuesta 6 horas a las 3 de la mañana.

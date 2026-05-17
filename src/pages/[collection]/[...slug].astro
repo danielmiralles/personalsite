@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Tag from "../../components/Tag.astro";
+import { personSchema, personRef } from "../../lib/schema.ts";
 
 type CollectionName = "posts" | "playbooks" | "pildoras";
 type AnyEntry =
@@ -77,28 +78,27 @@ const ogImagePath = `/og/${entry.collection}/${entry.id}.png`;
 
 const siteOrigin = Astro.site?.origin ?? "";
 
-const jsonLd = {
-  "@context": "https://schema.org",
+const articleSchema = {
   "@type": "Article",
   headline: entry.data.title,
   description: entry.data.excerpt,
   datePublished: isoDate,
+  dateModified: isoDate,
   inLanguage: "es-ES",
-  author: {
-    "@type": "Person",
-    name: "Daniel Miralles",
-    url: siteOrigin,
-  },
-  publisher: {
-    "@type": "Person",
-    name: "Daniel Miralles",
-  },
+  author: personRef(siteOrigin),
+  publisher: personRef(siteOrigin),
+  image: `${siteOrigin}${ogImagePath}`,
   keywords: entry.data.tags.join(", "),
   articleSection: colLabel,
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": `${siteOrigin}/${entry.collection}/${entry.id}`,
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [articleSchema, personSchema(siteOrigin)],
 };
 ---
 

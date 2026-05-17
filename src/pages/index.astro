@@ -3,9 +3,20 @@ import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
 import About from "../components/About.astro";
 import Latest from "../components/Latest.astro";
+import { personSchema, webSiteSchema } from "../lib/schema.ts";
+
+const siteOrigin = Astro.site?.origin ?? "";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [webSiteSchema(siteOrigin), personSchema(siteOrigin)],
+};
 ---
 
-<Layout>
+<Layout
+  ogImage="/img/daniel.png"
+  jsonLd={jsonLd}
+>
   <Hero />
   <About />
   <Latest />

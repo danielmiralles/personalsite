@@ -1,0 +1,91 @@
+---
+title: "El día que perdí eventos en producción"
+excerpt: "Todo el mundo se obsesiona con que el consumer sea resiliente: DLQ, retries, idempotencia. ¿Y si el evento nunca llega al topic? Esa es la historia que ojalá nadie tenga que vivir."
+date: 2026-05-17
+readTime: "5 min"
+tags: ["arquitectura", "event-driven", "outbox", "distribuidos", "kafka"]
+---
+
+La industria gastó la última década perfeccionando la resiliencia del lado **consumer**: dead-letter queues, dead-letter topics, retries con backoff exponencial, idempotency keys, exactly-once semantics. Y está bien. Es el lado visible del problema.
+
+Pero hay otro lado, mucho menos hablado, donde un error te cuesta noches enteras y cero gloria: **la producción del evento**. Lo que pasa entre el momento en que mutas un agregado en tu base de datos y el momento en que ese evento llega al broker. Si ahí algo se rompe, no hay DLQ que te salve. El evento nunca existió. Y nadie lo va a reprocesar porque nadie sabe que tenía que existir.
+
+A mí me pasó. Te cuento.
+
+## El incidente
+
+Era un sistema clásico de eventos de dominio. Un endpoint recibe una orden, valida, persiste el agregado en PostgreSQL, y después publica el evento `OrderCreated` en Kafka. El consumer río abajo armaba la proyección, disparaba el cálculo de comisiones, notificaba al sistema de facturación. La cadena habitual.
+
+El código se veía así, simplificado:
+
+```java
+@Transactional
+public Order createOrder(CreateOrderCommand cmd) {
+    Order order = Order.from(cmd);
+    orderRepository.save(order);                  // ✅ commit a Postgres
+    eventBus.publish(new OrderCreated(order));    // ¿✅?
+    return order;
+}
+```
+
+Inocente, ¿no? Esa línea de `publish()` parece infalible cuando lo pruebas localmente con un broker que responde en 2 ms. En producción, con Kafka detrás de un load balancer y la red haciendo lo que la red hace, eventualmente esa llamada falla. A veces porque el broker tuvo un rebalance de partición de 30 segundos. A veces porque hiciste un deploy del consumer y el productor se quedó esperando un ack que no llegó nunca. A veces, simplemente, porque la red.
+
+El sistema procesó **miles de órdenes** que entraron correctamente a la base de datos pero nunca generaron el evento. Los clientes veían sus pedidos. La facturación nunca se enteró.
+
+## La parte fea
+
+Lo descubrimos por reclamos. Pedidos "completados" que no se facturaban. Reconstruir lo que había pasado fue un trabajo arqueológico:
+
+- Identificar qué órdenes nunca generaron evento (un `LEFT JOIN` entre la tabla de órdenes y la de comisiones, porque no había un registro confiable de qué eventos se habían emitido).
+- Reconstruir el evento "como si" hubiera salido en ese momento, con los datos que estaban en la base hoy — pero que en algunos casos ya habían cambiado.
+- Armar el JSON a mano, respetando el schema y los IDs.
+- Tirar un script aparte que los publicara en Kafka, en orden, con rate limit para no aplastar al consumer.
+- Rezarle a alguien para que la idempotencia río abajo no hiciera un desastre.
+
+Tres días de trabajo. Para un problema que con el patrón correcto **no podía ocurrir**.
+
+## Por qué pasó
+
+El error de diseño es sutil pero importante. Mira la función de arriba otra vez: el `@Transactional` cubre solo la escritura en Postgres. La publicación al broker está **fuera de la transacción**. Son dos operaciones contra dos sistemas distintos, sin una transacción distribuida que las una.
+
+Eso significa que tu código tiene **cuatro estados posibles** al terminar:
+
+1. ✅ DB commit + ✅ evento publicado → el caso feliz
+2. ✅ DB commit + ❌ evento perdido → **el infierno**
+3. ❌ DB rollback + ❌ evento no publicado → ok, la operación falló entera
+4. ❌ DB rollback + ✅ evento publicado → evento fantasma, peor todavía
+
+El caso 2 es el más frecuente porque suele pasar **después** del commit, cuando crees que ya ganaste. El caso 4 es más raro pero existe si pones el `publish()` antes del commit.
+
+No hay forma de hacer esa función segura mientras la base de datos y el broker sean dos sistemas separados. Necesitas algo distinto.
+
+## La solución: Transactional Outbox
+
+El patrón se llama **outbox** y la idea es elegante: en la **misma transacción** donde mutas el agregado, escribes el evento en una tabla local de la base de datos. Esa tabla actúa como un buzón de salida. Después, un proceso separado se ocupa de leerla y publicar al broker.
+
+```java
+@Transactional
+public Order createOrder(CreateOrderCommand cmd) {
+    Order order = Order.from(cmd);
+    orderRepository.save(order);
+    outboxRepository.save(OutboxEvent.from(new OrderCreated(order)));
+    return order;
+}
+```
+
+La transacción cubre las dos escrituras. **O ambas se confirman, o ninguna**. Si el commit falla, no hay agregado ni evento. Si el commit tiene éxito, tienes el agregado **y** un registro indeleble del evento que debe salir.
+
+A partir de ahí, la publicación al broker se vuelve un problema operacional, no transaccional. Tienes dos formas razonables de hacerla:
+
+- **Polling worker**: un proceso (en la misma app o aparte) lee la tabla outbox cada X milisegundos, publica los pendientes, marca como enviados. Simple, sin dependencias raras, funciona en cualquier stack.
+- **Change Data Capture (CDC)**: una herramienta tipo Debezium escucha el WAL de Postgres y publica al broker en tiempo real. Más infraestructura, menor latencia, cero polling.
+
+Cualquiera de las dos garantiza que si el evento se grabó, eventualmente sale. Si el broker está caído, los eventos se acumulan en la tabla y se publican cuando vuelve. Si la app muere a la mitad de un envío, el proceso se reinicia y reintenta los pendientes. La pérdida del evento **deja de ser posible**.
+
+## La lección que ojalá te ahorre tres días
+
+> Si tu sistema necesita que dos cosas pasen juntas y una está en una base de datos transaccional, la otra mejor que esté ahí también — al menos hasta que un proceso confiable la mueva afuera.
+
+La regla mental que me quedó: **cualquier "publicar evento" después de un commit es un bug latente**. No importa cuánto reintente la librería del broker, no importa cuán confiable sea tu red, no importa cuán raro sea el escenario de fallo. Va a pasar. Y cuando pase, vas a estar reconstruyendo JSONs a las 2 de la mañana.
+
+El outbox no es elegante por novedoso. Es elegante porque te saca el problema de encima para siempre con una tabla más y unas pocas líneas de código.

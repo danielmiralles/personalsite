@@ -101,7 +101,7 @@ Contexto de esta publicación específica:
 - URL pública final: ${url}
 - Audiencia: ingenieros de software hispanohablantes, mid-senior, interesados en backend/arquitectura
 
-Devolvé JSON exacto con la estructura indicada. Sin markdown wrapper. Sin explicaciones.`;
+Devuelve JSON exacto con la estructura indicada. Sin markdown wrapper. Sin explicaciones.`;
 
   const user = `Título: ${mdx.frontmatter.title}
 Excerpt: ${mdx.frontmatter.excerpt}

@@ -22,6 +22,7 @@ export const WEBSITE_ID_FRAGMENT = "#website";
 export const PERSON_SAME_AS: string[] = [
   "https://www.linkedin.com/in/danielmirallest",
   "https://github.com/danielmiralles",
+  "https://x.com/danielmirallest",
 ];
 
 export function personSchema(siteOrigin: string) {

@@ -1,0 +1,106 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const title = "404 — Daniel Miralles";
+const description = "La ruta que buscas no existe en este sitio.";
+---
+
+<Layout title={title} description={description}>
+  <section class="max-w-3xl mx-auto px-6 pt-20 pb-24">
+    <p
+      class="text-sm mb-3"
+      style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    >
+      <span style="color: var(--color-fg-dim);">$</span>
+      cd
+      <span data-attempted-path style="color: var(--color-fg-primary);">/…</span>
+    </p>
+
+    <p
+      class="text-sm mb-12"
+      style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    >
+      <span style="color: var(--color-fg-dim);">zsh:</span>
+      no such file or directory:
+      <span data-attempted-path style="color: var(--color-fg-primary);">/…</span>
+    </p>
+
+    <h1
+      class="text-5xl md:text-6xl font-bold mb-6 tracking-tight leading-[1.1]"
+      style="color: var(--color-fg-primary);"
+    >
+      <span style="color: var(--color-accent);">404</span> — esta ruta no existe<span
+        class="cursor-blink"
+        aria-hidden="true"></span>
+    </h1>
+
+    <p
+      class="text-lg mb-12 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      O nunca existió, o ya no existe, o escribiste mal el path. Cualquiera de las
+      tres.
+    </p>
+
+    <div style="font-family: var(--font-mono);">
+      <p class="text-xs mb-4" style="color: var(--color-fg-dim);">
+        <span style="color: var(--color-fg-muted);">//</span> salidas razonables:
+      </p>
+      <ul class="space-y-3 text-base">
+        <li>
+          <a
+            href="/"
+            class="link-underline transition-colors inline-flex gap-3"
+            style="color: var(--color-accent);"
+          >
+            <span style="color: var(--color-fg-muted);">$ cd ~</span>
+            <span style="color: var(--color-fg-dim);">·</span>
+            <span>volver al inicio</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="/posts"
+            class="link-underline transition-colors inline-flex gap-3"
+            style="color: var(--color-accent);"
+          >
+            <span style="color: var(--color-fg-muted);">$ cd ~/posts</span>
+            <span style="color: var(--color-fg-dim);">·</span>
+            <span>reflexiones cortas</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="/playbooks"
+            class="link-underline transition-colors inline-flex gap-3"
+            style="color: var(--color-accent);"
+          >
+            <span style="color: var(--color-fg-muted);">$ cd ~/playbooks</span>
+            <span style="color: var(--color-fg-dim);">·</span>
+            <span>guías paso a paso</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="/pildoras"
+            class="link-underline transition-colors inline-flex gap-3"
+            style="color: var(--color-accent);"
+          >
+            <span style="color: var(--color-fg-muted);">$ cd ~/pildoras</span>
+            <span style="color: var(--color-fg-dim);">·</span>
+            <span>lecciones de errores</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <script>
+    const path = window.location.pathname;
+    document
+      .querySelectorAll<HTMLElement>("[data-attempted-path]")
+      .forEach((el) => {
+        el.textContent = path;
+      });
+  </script>
+</Layout>

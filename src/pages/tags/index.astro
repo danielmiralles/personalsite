@@ -1,0 +1,94 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../lib/slug.ts";
+
+type AnyEntry =
+  | CollectionEntry<"posts">
+  | CollectionEntry<"playbooks">
+  | CollectionEntry<"pildoras">;
+
+const [posts, playbooks, pildoras] = await Promise.all([
+  getCollection("posts", ({ data }) => !data.draft),
+  getCollection("playbooks", ({ data }) => !data.draft),
+  getCollection("pildoras", ({ data }) => !data.draft),
+]);
+
+const all = [...posts, ...playbooks, ...pildoras] as AnyEntry[];
+
+const tagMap = new Map<string, { tag: string; count: number }>();
+for (const entry of all) {
+  for (const tag of entry.data.tags) {
+    const slug = slugify(tag);
+    const existing = tagMap.get(slug);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      tagMap.set(slug, { tag, count: 1 });
+    }
+  }
+}
+
+const tags = Array.from(tagMap.entries())
+  .map(([slug, { tag, count }]) => ({ slug, tag, count }))
+  .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+
+const title = "Tags — Daniel Miralles";
+const description =
+  "Todos los temas tratados en el sitio: posts, playbooks y píldoras agrupados por etiqueta.";
+---
+
+<Layout title={title} description={description}>
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-10">
+    <p
+      class="text-sm mb-4"
+      style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    >
+      <span style="color: var(--color-fg-dim);">$</span> ls ~/tags
+    </p>
+    <h1
+      class="text-4xl md:text-5xl font-bold mb-4 tracking-tight"
+      style="color: var(--color-fg-primary);"
+    >
+      <span style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.55em;">## </span>Tags
+    </h1>
+    <p
+      class="text-lg max-w-[60ch] leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      {tags.length} temas · {all.length} entradas. Los más frecuentes primero.
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-24">
+    <ul class="flex flex-wrap gap-3">
+      {tags.map(({ slug, tag, count }) => (
+        <li>
+          <a
+            href={`/tags/${slug}`}
+            class="inline-flex items-center gap-2 px-3 py-2 rounded transition-colors"
+            style="
+              font-family: var(--font-mono);
+              background-color: var(--color-bg-elevated);
+              border: 1px solid var(--color-border-subtle);
+              color: var(--color-accent);
+              font-size: 0.875rem;
+            "
+          >
+            #{tag}
+            <span
+              class="text-xs"
+              style="color: var(--color-fg-dim);"
+            >×{count}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>
+
+<style>
+  ul li a:hover {
+    border-color: var(--color-accent) !important;
+  }
+</style>

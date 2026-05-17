@@ -36,7 +36,7 @@ export function personSchema(siteOrigin: string) {
     description:
       "Solution Architect y Tech Lead con 14+ años diseñando sistemas distribuidos para banca, telco y healthcare. Escribe en español sobre arquitectura, backend y AI-augmented development.",
     url: siteOrigin,
-    image: `${siteOrigin}/img/daniel.png`,
+    image: `${siteOrigin}/img/daniel.jpg`,
     email: "mailto:contact@danielmiralles.com",
     sameAs: PERSON_SAME_AS,
     worksFor: {

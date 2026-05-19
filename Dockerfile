@@ -8,6 +8,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Build-time env vars (Astro PUBLIC_ contract — must be declared ARG to be
+# injected by Coolify/Docker via --build-arg; otherwise astro build sees them
+# as undefined and the Analytics triple-guard silently disables the tracker).
+ARG PUBLIC_UMAMI_SRC
+ARG PUBLIC_UMAMI_WEBSITE_ID
+ENV PUBLIC_UMAMI_SRC=$PUBLIC_UMAMI_SRC
+ENV PUBLIC_UMAMI_WEBSITE_ID=$PUBLIC_UMAMI_WEBSITE_ID
+
 # Build the static site (includes content collections + OG image generation)
 COPY . .
 RUN npm run build

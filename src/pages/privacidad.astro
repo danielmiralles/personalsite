@@ -1,0 +1,133 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const title = "Privacidad — Daniel Miralles";
+const description =
+  "Cómo se miden las visitas en este sitio: Umami self-hosted, sin cookies, sin datos personales, DNT respetado.";
+---
+
+<Layout title={title} description={description}>
+  <section class="max-w-3xl mx-auto px-6 pt-20 pb-24">
+    <p
+      class="text-sm mb-3"
+      style="font-family: var(--font-mono); color: var(--color-fg-muted);"
+    >
+      <span style="color: var(--color-fg-dim);">$</span> cat privacidad.md
+    </p>
+
+    <h1
+      class="text-4xl md:text-5xl font-bold mb-10 tracking-tight leading-[1.1]"
+      style="color: var(--color-fg-primary);"
+    >
+      Privacidad
+    </h1>
+
+    <p
+      class="text-lg mb-12 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      Este sitio mide visitas con la mínima información necesaria para entender
+      qué contenidos resultan útiles. Sin trucos, sin terceros, sin perfilado.
+      Acá está lo que se recoge y lo que no.
+    </p>
+
+    <h2
+      class="text-2xl font-bold mb-3 mt-12 tracking-tight"
+      style="color: var(--color-fg-primary);"
+    >
+      <span
+        style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.7em;"
+        >## </span
+      >Qué medimos
+    </h2>
+    <p
+      class="text-base mb-6 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      Pageviews anónimos y Core Web Vitals (CLS, LCP, INP) a través de una
+      instancia self-hosted de
+      <a
+        href="https://umami.is"
+        target="_blank"
+        rel="noopener"
+        class="link-underline"
+        style="color: var(--color-accent);">Umami</a
+      >. Los datos viven en un servidor mío, no en un tercero. El objetivo es
+      saber qué páginas se leen y si el sitio rinde bien en distintos
+      dispositivos.
+    </p>
+
+    <h2
+      class="text-2xl font-bold mb-3 mt-12 tracking-tight"
+      style="color: var(--color-fg-primary);"
+    >
+      <span
+        style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.7em;"
+        >## </span
+      >Qué NO medimos
+    </h2>
+    <p
+      class="text-base mb-6 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      Cero seguimiento intrusivo: sin cookies, sin datos personales, sin
+      guardar tu IP, sin fingerprinting del navegador. Nada se comparte con
+      Google, Facebook, ni ninguna otra red publicitaria. No hay forma de
+      identificarte individualmente desde estas métricas — solamente agregados
+      anónimos por página.
+    </p>
+
+    <h2
+      class="text-2xl font-bold mb-3 mt-12 tracking-tight"
+      style="color: var(--color-fg-primary);"
+    >
+      <span
+        style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.7em;"
+        >## </span
+      >Cómo optar por no participar
+    </h2>
+    <p
+      class="text-base mb-4 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      El tracker respeta la señal
+      <strong style="color: var(--color-fg-primary);">DNT (Do Not Track)</strong>
+      de tu navegador: si la tenés activada, no se envía ningún evento.
+      Adicionalmente podés desactivarlo manualmente ejecutando esto una vez en
+      la consola del navegador:
+    </p>
+    <pre
+      class="text-sm p-4 mb-6 overflow-x-auto rounded"
+      style="font-family: var(--font-mono); background: var(--color-bg-elevated); color: var(--color-fg-primary); border: 1px solid var(--color-border-subtle);"
+    ><code>localStorage.setItem('umami.disabled', 1)</code></pre>
+    <p
+      class="text-base mb-6 leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      A partir de ahí, este navegador no reportará más nada hasta que limpies el
+      localStorage del sitio.
+    </p>
+
+    <h2
+      class="text-2xl font-bold mb-3 mt-12 tracking-tight"
+      style="color: var(--color-fg-primary);"
+    >
+      <span
+        style="font-family: var(--font-mono); color: var(--color-fg-dim); font-size: 0.7em;"
+        >## </span
+      >Contacto
+    </h2>
+    <p
+      class="text-base leading-relaxed"
+      style="color: var(--color-fg-muted);"
+    >
+      Si tenés dudas o querés que borre cualquier dato relacionado con tu
+      navegación, escribime a
+      <a
+        href="mailto:contact@danielmiralles.com"
+        class="link-underline"
+        style="color: var(--color-accent);">contact@danielmiralles.com</a
+      >.
+    </p>
+  </section>
+</Layout>

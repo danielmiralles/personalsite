@@ -1,0 +1,22 @@
+---
+// Self-hosted Umami tracker. Triple-guarded:
+//   1. PROD only — never injects under `astro dev`.
+//   2. Both env vars present — avoids broken tags if Coolify misconfigured.
+//   3. `data-domains` runtime check — tracker self-disables on any host other
+//      than daniel.sinapsys.work (covers localhost preview, CI, etc.).
+const src = import.meta.env.PUBLIC_UMAMI_SRC;
+const websiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+const enabled = import.meta.env.PROD && src && websiteId;
+---
+
+{enabled && (
+  <script
+    is:inline
+    defer
+    src={src}
+    data-website-id={websiteId}
+    data-domains="daniel.sinapsys.work"
+    data-do-not-track="true"
+    data-performance="true"
+  />
+)}

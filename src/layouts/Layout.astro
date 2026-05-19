@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import DuotoneFilter from "../components/DuotoneFilter.astro";
+import Analytics from "../components/Analytics.astro";
 
 type OgType = "website" | "article";
 
@@ -78,6 +79,8 @@ const siteName = "Daniel Miralles";
     {jsonLd && (
       <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
     )}
+
+    <Analytics />
   </head>
   <body class="min-h-screen flex flex-col">
     <DuotoneFilter />
